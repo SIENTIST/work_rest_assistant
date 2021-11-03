@@ -64,10 +64,19 @@ void MainWindow::WorkRestCircle()
 //        {
 //        } //程序的进程会卡在这里
 
-        QMessageBox message(QMessageBox::NoIcon, "休息时间到了~", "Please reset for " + ui->restTimeEdit->text() + " minutes.");
-        message.setIconPixmap(m_messagePix);
-        message.setWindowFlags(Qt::WindowStaysOnTopHint);
-        message.exec();
+
+//        QMessageBox message(QMessageBox::NoIcon, "休息时间到了~", "Please reset for " + ui->restTimeEdit->text() + " minutes.");
+//        message.setIconPixmap(m_messagePix);
+//        message.setWindowFlags(Qt::WindowStaysOnTopHint);
+//        message.exec();
+
+        m_restRemindDisplay.changePictureLable();
+
+        m_restRemindDisplay.getRestTime(ui->restTimeEdit->text());
+        m_restRemindDisplay.getOtherRemind(ui->otherRemindLineEdit->text());
+
+        m_restRemindDisplay.setWindowFlags(m_restRemindDisplay.windowFlags() | Qt::WindowStaysOnTopHint); //使对话框弹出在所有程序的顶端
+        m_restRemindDisplay.exec();  //使用exec而不是show，使程序阻塞在此处
 
 //        ///---实例化消息对话框对象
 //        QMessageBox *msgBox;

@@ -5,6 +5,7 @@
 #include <QTimer>
 
 #include "assistant.h"
+#include "rest_remind_dialog/rest_remind_dialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,6 +22,7 @@ public:
 private slots:
     void on_switchBtn_clicked();
     void WorkRestCircle();
+
 public:
 
 
@@ -42,5 +44,7 @@ private:
     QTimer* m_pWorkRestTimer;
 
     QPixmap m_messagePix;
+
+    CrestRemindDialog m_restRemindDisplay;
 };
 #endif // MAINWINDOW_H

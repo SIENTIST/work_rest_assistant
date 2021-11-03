@@ -11,16 +11,22 @@ CONFIG += c++11
 SOURCES += \
     assistant.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    rest_remind_dialog/rest_remind_dialog.cpp
 
 HEADERS += \
     assistant.h \
-    mainwindow.h
+    mainwindow.h \
+    rest_remind_dialog/rest_remind_dialog.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    rest_remind_dialog/rest_remind_dialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    picture_resource.qrc
