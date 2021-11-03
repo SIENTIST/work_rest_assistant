@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QMessageBox>
+#include <QImage>
+#include <QPixmap>
 
 #include <QDebug>
 
@@ -13,18 +15,33 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->workTimeEdit->setText("45");
+    ui->workTimeEdit->setText("45"); //设定显示的初始值
     ui->restTimeEdit->setText("5");
 
     m_stateFlag = 0;
 
-    m_pCircleTimer = new QTimer(this);
-    m_pCircleTimer->stop();
-    m_pCircleTimer->setInterval(1000); //设置定时周期，单位：毫秒
-    connect(m_pCircleTimer, SIGNAL(timeout()), this, SLOT(Circle()));
+    m_pWorkRestTimer = new QTimer(this);
+    m_pWorkRestTimer->stop();
+    m_pWorkRestTimer->setInterval(1000); //设置定时周期，单位:毫秒   现在设定为每一秒检查一次时间
+    connect(m_pWorkRestTimer, SIGNAL(timeout()), this, SLOT(WorkRestCircle())); //将工作休息定时器连接到函数
+
+    m_workRestState = 0; // 0未启动；1工作中；2休息中
+
+    //QImage image;
+    QPixmap pixmap;
+    if(!(pixmap.load("D:\\Project\\WorkRestAssistant\\program\\work_rest_assistant\\picture.jpg"))) //加载图像
+    {
+        QMessageBox::information(this,
+                                 tr("打开图像失败"),
+                                 tr("打开图像失败!"));
+        return;
+    }
+
+    m_messagePix = pixmap.scaled(1920 / 5, 1080 / 5);
 
 
 }
+
 
 //http://c.biancheng.net/view/1848.html
 MainWindow::~MainWindow()
@@ -32,23 +49,63 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::Circle()
+
+void MainWindow::WorkRestCircle()
 {
-    sTime currrntTime = getCurrentTime();
+    sTime currrntTime = getCurrentTime(); //获取当前时间
 
-    if(currrntTime.hour == m_endTime.hour
-    && currrntTime.minute >= m_endTime.minute)
+    if(m_workRestState == 1 //正在工作中
+    && currrntTime.hour == m_workEndTime.hour
+    && currrntTime.minute >= m_workEndTime.minute) //工作时间到头
     {
-        if(QMessageBox::Yes == QMessageBox::question(this,"Rest reminder", "Please rest.", QMessageBox::Yes, QMessageBox::No))
-        {
-        }
+        // 弹出提醒休息窗口
 
-        m_startTime = currrntTime;
-        m_endTime = calcEndTime(currrntTime, m_workMinute);
+//        if(QMessageBox::Yes == QMessageBox::question(this,"Rest reminder", "Please rest " + ui->restTimeEdit->text() + " minute!", QMessageBox::Yes, QMessageBox::No))
+//        {
+//        } //程序的进程会卡在这里
+
+        QMessageBox message(QMessageBox::NoIcon, "休息时间到了~", "Please reset for " + ui->restTimeEdit->text() + " minutes.");
+        message.setIconPixmap(m_messagePix);
+        message.setWindowFlags(Qt::WindowStaysOnTopHint);
+        message.exec();
+
+//        ///---实例化消息对话框对象
+//        QMessageBox *msgBox;
+//        msgBox = new QMessageBox("title",		///--这里是设置消息框标题
+//            "messageBox comment",						///--这里是设置消息框显示的内容
+//            QMessageBox::Critical,							///--这里是在消息框显示的图标
+//            QMessageBox::Ok | QMessageBox::Default,		///---这里是显示消息框上的按钮情况
+//            QMessageBox::Cancel | QMessageBox::Escape,	///---这里与 键盘上的 escape 键结合。当用户按下该键，消息框将执行cancel按钮事件
+//            0);														///---这里是 定义第三个按钮， 该例子 只是 了显示2个按钮
+
+//        msgBox->show();									///---显示消息框
+
+//        QMessageBox *msgBox;
+//        msgBox = new QMessageBox("title", "text", QMessageBox::Question,QMessageBox::Ok | QMessageBox::Default,NULL,0);
+//        msgBox->setWindowFlags(Qt::WindowStaysOnTopHint);
+//        msgBox->exec();
+
+
+        m_workRestState = -1; //进入休息状态
+
+        currrntTime = getCurrentTime(); //重新获取当前时间
+        int restTimeMinute = (int)ui->restTimeEdit->text().toFloat(); //获取休息时间
+
+        m_restEndTime = TimeAddMinute(currrntTime, restTimeMinute);   //计算休息结束时间
     }
 
+    if(m_workRestState == -1 //在休息中
+    && currrntTime.hour == m_restEndTime.hour
+    && currrntTime.minute >= m_restEndTime.minute)  //休息时间到头
+    {
+        m_workRestState = 1; //进入工作状态
+
+        int workTimeMinute = (int)ui->workTimeEdit->text().toFloat(); //获取工作时间  不直接转int，是为了避免输入浮点型造成错误
+        m_workEndTime = TimeAddMinute(currrntTime, workTimeMinute); //计算新的工作结束时间
+    }
 
 }
+
 
 void MainWindow::on_switchBtn_clicked()
 {
@@ -64,14 +121,13 @@ void MainWindow::on_switchBtn_clicked()
         QString str = "状态：正在运行";
         ui->displayStateLabel->setText(str);
 
-        m_startTime = getCurrentTime();
+        m_pWorkRestTimer->start(); //启动工作休息定时器
+        m_workRestState = 1;       //进入工作状态
 
-        m_workMinute = (int)ui->workTimeEdit->text().toFloat();
+        sTime currrntTime = getCurrentTime(); //获取当前时间
+        int workTimeMinute = (int)ui->workTimeEdit->text().toFloat(); //获取工作时间  不直接转int，是为了避免输入浮点型造成错误
 
-        m_endTime = calcEndTime(m_startTime, m_workMinute);
-
-        m_pCircleTimer->start();
-
+        m_workEndTime = TimeAddMinute(currrntTime, workTimeMinute);   //计算工作结束时间
     }
     else if(m_stateFlag == 1)
     {
@@ -81,10 +137,11 @@ void MainWindow::on_switchBtn_clicked()
 
         m_stateFlag = 0;
 
-        memset( (void *)&m_startTime, 0x00, sizeof(sTime));
-        memset( (void *)&m_endTime, 0x00, sizeof(sTime));
+        memset( (void *)&m_startWorkTime, 0x00, sizeof(sTime));
+        memset( (void *)&m_workEndTime, 0x00, sizeof(sTime));
 
-        m_pCircleTimer->stop();
+        m_pWorkRestTimer->stop(); //关闭工作休息定时器
+        m_workRestState = 0;
     }
 #endif
 }

@@ -20,7 +20,7 @@ public:
 
 private slots:
     void on_switchBtn_clicked();
-    void Circle();
+    void WorkRestCircle();
 public:
 
 
@@ -31,10 +31,16 @@ private:
     int m_workMinute;
     int m_restMinute;
 
-    sTime m_currentTime;
-    sTime m_startTime;
-    sTime m_endTime;
+    int m_workRestState;
 
-    QTimer* m_pCircleTimer;
+    sTime m_currentTime;
+    sTime m_startWorkTime;
+
+    sTime m_workEndTime;
+    sTime m_restEndTime;
+
+    QTimer* m_pWorkRestTimer;
+
+    QPixmap m_messagePix;
 };
 #endif // MAINWINDOW_H

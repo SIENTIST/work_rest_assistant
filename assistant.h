@@ -10,7 +10,7 @@ struct sTime{
 };
 
 sTime getCurrentTime();
-sTime calcEndTime(const sTime startTime, const int addMinute);
+sTime TimeAddMinute(sTime startTime, const int addMinute);
 
 
 #endif // CASSISTANT_H

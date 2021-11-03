@@ -13,7 +13,7 @@ sTime getCurrentTime()
     return outputTime;
 }
 
-sTime calcEndTime(const sTime startTime, const int addMinute)
+sTime TimeAddMinute(sTime startTime, const int addMinute)
 {
     int addHour = (addMinute + startTime.minute) / 60;
 
