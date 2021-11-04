@@ -13,7 +13,7 @@ sTime getCurrentTime()
     return outputTime;
 }
 
-sTime TimeAddMinute(sTime startTime, const int addMinute)
+sTime TimeAddMinute(sTime startTime, const int addMinute) //增加一段分钟后，时分的变化
 {
     int addHour = (addMinute + startTime.minute) / 60;
 

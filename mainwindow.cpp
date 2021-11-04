@@ -6,9 +6,6 @@
 #include <QImage>
 #include <QPixmap>
 
-#include <QDebug>
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -32,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
-//http://c.biancheng.net/view/1848.html
+// 关于定时器参考了的博客 http://c.biancheng.net/view/1848.html
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -45,44 +42,15 @@ void MainWindow::WorkRestCircle()
 
     if(m_workRestState == 1 //正在工作中
     && currrntTime.hour == m_workEndTime.hour
-    && currrntTime.minute >= m_workEndTime.minute) //工作时间到头
+    && currrntTime.minute >= m_workEndTime.minute) //工作时间结束，弹出提醒休息窗口
     {
-        // 弹出提醒休息窗口
-
-//        if(QMessageBox::Yes == QMessageBox::question(this,"Rest reminder", "Please rest " + ui->restTimeEdit->text() + " minute!", QMessageBox::Yes, QMessageBox::No))
-//        {
-//        } //程序的进程会卡在这里
-
-
-//        QMessageBox message(QMessageBox::NoIcon, "休息时间到了~", "Please reset for " + ui->restTimeEdit->text() + " minutes.");
-//        message.setIconPixmap(m_messagePix);
-//        message.setWindowFlags(Qt::WindowStaysOnTopHint);
-//        message.exec();
-
-        m_restRemindDisplay.changePictureLable();
+        m_restRemindDisplay.changePictureLable(); //随机改变弹窗中的图片
 
         m_restRemindDisplay.getRestTime(ui->restTimeEdit->text());
         m_restRemindDisplay.getOtherRemind(ui->otherRemindLineEdit->text());
 
         m_restRemindDisplay.setWindowFlags(m_restRemindDisplay.windowFlags() | Qt::WindowStaysOnTopHint); //使对话框弹出在所有程序的顶端
-        m_restRemindDisplay.exec();  //使用exec而不是show，使程序阻塞在此处
-
-//        ///---实例化消息对话框对象
-//        QMessageBox *msgBox;
-//        msgBox = new QMessageBox("title",		///--这里是设置消息框标题
-//            "messageBox comment",						///--这里是设置消息框显示的内容
-//            QMessageBox::Critical,							///--这里是在消息框显示的图标
-//            QMessageBox::Ok | QMessageBox::Default,		///---这里是显示消息框上的按钮情况
-//            QMessageBox::Cancel | QMessageBox::Escape,	///---这里与 键盘上的 escape 键结合。当用户按下该键，消息框将执行cancel按钮事件
-//            0);														///---这里是 定义第三个按钮， 该例子 只是 了显示2个按钮
-
-//        msgBox->show();									///---显示消息框
-
-//        QMessageBox *msgBox;
-//        msgBox = new QMessageBox("title", "text", QMessageBox::Question,QMessageBox::Ok | QMessageBox::Default,NULL,0);
-//        msgBox->setWindowFlags(Qt::WindowStaysOnTopHint);
-//        msgBox->exec();
-
+        m_restRemindDisplay.exec();  //使用exec()而不是show()，使程序阻塞在此处，等待用户关闭弹窗
 
         m_workRestState = -1; //进入休息状态
 
@@ -94,12 +62,12 @@ void MainWindow::WorkRestCircle()
 
     if(m_workRestState == -1 //在休息中
     && currrntTime.hour == m_restEndTime.hour
-    && currrntTime.minute >= m_restEndTime.minute)  //休息时间到头
+    && currrntTime.minute >= m_restEndTime.minute)  //休息时间结束
     {
         m_workRestState = 1; //进入工作状态
 
         int workTimeMinute = (int)ui->workTimeEdit->text().toFloat(); //获取工作时间  不直接转int，是为了避免输入浮点型造成错误
-        m_workEndTime = TimeAddMinute(currrntTime, workTimeMinute); //计算新的工作结束时间
+        m_workEndTime = TimeAddMinute(currrntTime, workTimeMinute);   //计算新的工作结束时间
     }
 
 }
@@ -107,8 +75,6 @@ void MainWindow::WorkRestCircle()
 
 void MainWindow::on_switchBtn_clicked()
 {
-
-#if 1
     if(m_stateFlag == 0)
     {
         m_stateFlag = 1;
@@ -135,11 +101,10 @@ void MainWindow::on_switchBtn_clicked()
 
         m_stateFlag = 0;
 
-        memset( (void *)&m_startWorkTime, 0x00, sizeof(sTime));
+        memset( (void *)&m_startWorkTime, 0x00, sizeof(sTime)); //结构体清零
         memset( (void *)&m_workEndTime, 0x00, sizeof(sTime));
 
         m_pWorkRestTimer->stop(); //关闭工作休息定时器
         m_workRestState = 0;
     }
-#endif
 }
