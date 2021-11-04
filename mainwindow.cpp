@@ -15,8 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->setWindowTitle("It's time for a break"); //rest time is comming
+
     ui->workTimeEdit->setText("45"); //设定显示的初始值
     ui->restTimeEdit->setText("5");
+    ui->otherRemindLineEdit->setText("记得喝水");
 
     m_stateFlag = 0;
 
@@ -26,20 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_pWorkRestTimer, SIGNAL(timeout()), this, SLOT(WorkRestCircle())); //将工作休息定时器连接到函数
 
     m_workRestState = 0; // 0未启动；1工作中；2休息中
-
-    //QImage image;
-    QPixmap pixmap;
-    if(!(pixmap.load("D:\\Project\\WorkRestAssistant\\program\\work_rest_assistant\\picture.jpg"))) //加载图像
-    {
-        QMessageBox::information(this,
-                                 tr("打开图像失败"),
-                                 tr("打开图像失败!"));
-        return;
-    }
-
-    m_messagePix = pixmap.scaled(1920 / 5, 1080 / 5);
-
-
 }
 
 

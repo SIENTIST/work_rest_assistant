@@ -36,14 +36,14 @@ void CrestRemindDialog::changePictureLable()
 
     int vecSize = m_pixmapVec.size();
 
-    int index = QRandomGenerator::global()->bounded(vecSize - 1);		//生成一个0和10之间的整数
+    int index = QRandomGenerator::global()->bounded(vecSize - 1);		//生成一个随机数
 
     ui->pictureLabel->setPixmap(m_pixmapVec[index]);
 }
 
 void CrestRemindDialog::getRestTime(QString restTime)
 {
-    ui->restRemindLabel->setText("Please rest for " + restTime + " minute! ");
+    ui->restRemindLabel->setText("(=^_^=)  Please rest for " + restTime + " minute.  (=￣ω￣=)");
 }
 void CrestRemindDialog::getOtherRemind(QString remindStr)
 {

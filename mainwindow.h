@@ -43,8 +43,6 @@ private:
 
     QTimer* m_pWorkRestTimer;
 
-    QPixmap m_messagePix;
-
     CrestRemindDialog m_restRemindDisplay;
 };
 #endif // MAINWINDOW_H
